@@ -1,0 +1,102 @@
+\section{Summary}
+\subsection{Introduction}
+The Stahel-Donoho estimator is a well-known affine equivariant robust estimator
+of multivariate location and scatter.
+The estimator gains its robustness by using a weighting function, giving a
+small weight to observations which have a large ``outlyingness.''
+However the SD estimator has difficulties in identifying the correct
+outlyingness when a majority of the observations are contaminated in at least
+one of their components.
+This is a problem because contamination of components is common in data with
+a high number of dimensions.
+By huberizing the data before calculating the outlyingness, which yields the
+huberized outlyingness the robustness of the estimator towards such
+contaminated data is increased.
+
+\subsection{Contamination Model}
+The standard contamination model assumes that the majority of the observations
+are regular, following some underlying model distribution, while the
+remaining minority, the outliers, can be anything.
+For high-dimensional data this model is unrealistic, it is far more likely that
+most observations have been contaminated in some of their components.
+A more flexible model is needed to study the influence of contamination in
+many dimensions.
+Let $X$, $Y$, and $Z$ be $p$-dimensional random vectors, where $Y$ follows
+some regular distribution and $Z$ has an arbitrary distribution that generates
+the outliers.
+Then the observed random variable $X$ follows the model
+    \[ X = (\mathbf{I} - \mathbf{B})Y + \mathbf{B}Z, \]
+where $\mathbf{B} = diag(\mathit{B}_1, \mathit{B}_2, \dots, \mathit{B}_p)$
+is a diagonal matrix and $\mathit{B}_1, \mathit{B}_2, \dots, \mathit{B}_p$
+are Bernoulli random variables with $P(\mathit{B}_i = 1) = \epsilon_i$.
+
+The standard contamination model corresponds to the assumption
+$P(\mathit{B}_1 = \mathit{B}_2 = \dots = \mathit{B}_p) = 1$.
+Such contaminated observations are called \emph{structural outliers}.
+These are not very interesting because the regular SD estimator copes very
+well with them and improvements are not necessary/expected for this type of
+outlier.
+
+The case considered further is that of \emph{componentwise outliers} which
+corresponds to the assumption that
+$\mathit{B}_1, \mathit{B}_2, \dots, \mathit{B}_p$ are independent.
+If $P(\mathit{B}_i = 1) = \epsilon$ for all components, then each variable contains
+on average a fraction $(1-\epsilon)$ of clean measurements, but the probability
+that an observation is completely uncontaminated is only $(1-\epsilon)^p$.
+Even for moderate $\epsilon$ this probability quickly exceeds $50\%$ for high
+dimensions $p$, so there is no majority of outlier-free observations.
+The independent model does not support affine transformations because of
+\emph{outlier propagation}.
+As a consequence, affine equivariant estimators are not very robust under this
+model.
+
+\subsection{Stahel-Donoho estimator}
+Let $\mathbf{X}$ be an $n \times p$ data matrix that contains $n$ observations
+$x_1, \dots, x_n$ in $\mathbb{R}^p$.
+Let $\mu$ and $\sigma$ be shift and scale equivariant univariate location and
+scale statistics.
+Then, for any $y \in \mathbb{R}^p$, the Stahel-Donoho \emph{outlyingness} is
+defined as
+    \[ r(y, \mathbf{X}) = \sup_{a \in S_p} \frac{|y' a - \mu(\mathbf{X}a)|}
+        {\sigma(\mathbf{X}a)}, \]
+with $S_p = \{ a \in \mathbb{R}^p : \|a\| = 1 \}$.
+From now on, we will denote $r(x_i, \mathbf{X})$ by $r_i$.
+The Stahel-Donoho estimator of location and scatter $(T_{SD}, \mathbf{S}_{SD})$
+is defined as
+    \[ T_{SD} = \frac{\sum\limits_{i=1}^n w_i x_i}{\sum\limits_{i=1}^n w_i}, \]
+and
+    \[ \mathbf{S}_{SD} = \frac{\sum\limits_{i=1}^n w_i (x_i - T_{SD})(x_i - T_{SD})'}
+        {\sum\limits_{i=1}^n w_i}, \]
+where $w_i = w(r_i)$ is a weight function so that observations with large
+outlyingness get small weights.
+To attain the maximum breakdown point $\mu$ is taken to be the median and
+$\sigma$ is chosen to be the modified median absolute deviation.
+
+From these definitions it is clear that the SD estimators are a weighted mean
+and covariance matrix.
+The weight depends on the outlyingness, so the robustness of the estimator
+primarily depends on the calculation of the outlyingness.
+
+In figures \ref{fig:1} through \ref{fig:3} the problems with this calculation
+of the outlyingness are highlighted.
+The outliers that are outlying in both dimensions are masked because the
+majority of the observations are outlying in at least one  dimension and the
+regular observations are swamped because of this.
+The SD estimator can clearly not cope with this kind of contamination.
+
+\subsection{Stahel-Donoho estimator with huberized outlyingness (HSD)}
+To improve the robustness of the SD estimator the calculation of the
+outlyingness is adapted.
+To avoid the masking and swamping effects of the outliers the data is first
+huberized before the median and MAD are calculated.
+Then the outlyingness is calculated using these location and scale estimates.
+    \[ r_H(y,\mathbf{X}) = \sup_{a \in S_p} \frac{|y'a - \mu(\mathbf{X}_H a)|}
+        {\sigma{\mathbf{X}_H a}} \]
+Becaus of the huberization the outliers have far less influence on the
+estimators for scale and location used in the calculation of the outlyingness
+and consequently their outlyingess is far greater.
+
+The resulting HSD estimator loses the affine equivariance property because the
+huberization is a componentwise transformation.
+However, the estimator is far more robust in situations with many contaminated
+observations, which is realistic in real high-dimensional datasets.
